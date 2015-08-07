@@ -14,14 +14,93 @@
 	  </div>
 	</div>
   </div>
-  <div class="container">
-	<p>Here is static content in the web page. You'll notice that it gets replaced by our
-	app as soon as we start it.</p>
+  <div class="app-container">
+    <div id="main-region" class="container">
+      <p>static.</p>
+    </div>
   </div>
+  <script type="text/template" id="contact-list-item">
+    <%- firstName %> <%- lastName %>
+  </script>
   <script src="./assets/js/vendor/jquery.js"></script>
   <script src="./assets/js/vendor/json2.js"></script>
   <script src="./assets/js/vendor/underscore.js"></script>
   <script src="./assets/js/vendor/backbone.js"></script>
   <script src="./assets/js/vendor/backbone.marionette.js"></script>
+
+  <script type="text/javascript">
+    var ContactManager = new Marionette.Application();
+
+    ContactManager.Contact = Backbone.Model.extend({
+      defaults: {
+        firstName: "",
+        phoneNumber: "No Phone yet"
+      }
+    });
+
+    ContactManager.ContactItemView = Marionette.ItemView.extend({
+      tagName: "li",
+
+      template: "#contact-list-item",
+
+      events: {
+        "click li": "alertPhoneNumber"
+      },
+
+      alertPhoneNumber: function(){
+        console.log(this.model.escape("phoneNumber"));
+      }
+    });
+
+    ContactManager.ContactsView = Marionette.CollectionView.extend({
+      tagName: "ul",
+      childView: ContactManager.ContactItemView
+    });
+
+    ContactManager.ContactCollection = Backbone.Collection.extend({
+      model: ContactManager.Contact,
+      comparator: "firstName"
+    });
+
+    ContactManager.on("before:start", function(){
+      var RegionContainer = Marionette.LayoutView.extend({
+        el: "#app-container",
+        regions: {
+          main: "#main-region"
+        }
+      });
+      ContactManager.regions = new RegionContainer();
+    });
+
+    ContactManager.on("start", function() {
+      var contacts = new ContactManager.ContactCollection(
+        [
+          {
+            firstName: "Giuseppe",
+            lastName: "Grillo",
+            phoneNumber: "1231433243"
+          },
+          {
+            firstName: "Shareef",
+            lastName: "Abdur-Raheem",
+            phoneNumber: "98765533243"
+          },
+          {
+            firstName: "Joe",
+            lastName: "Pilgrim",
+            phoneNumber: "01231433243"
+          }
+        ]  
+      );
+
+      var contactsListView = new ContactManager.ContactsView({
+        collection: contacts
+      });
+      
+      ContactManager.regions.main.show(contactsListView);
+    });
+    
+    ContactManager.start();
+  </script>
 </body>
 </html>
