@@ -20,86 +20,38 @@
     </div>
   </div>
   <script type="text/template" id="contact-list-item">
-    <%- firstName %> <%- lastName %>
+    <td><%- firstName %></td><td><%- lastName %></td>
+    <td>
+      <a href="#" class="btn btn-small js-show"><i class="icon-eye-open"></i>Show</a>
+    </td>
+    <td>
+      <button class="btn btn-small js-delete"><i class="icon-remove"></i>Delete</button>
+    </td>
+  </script>
+  <script type="text/template" id="contact-list">
+    <thead>
+      <tr><th>First Name</th><th>Family name</th><th></th></tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </script>
+  <script type="text/template" id="contact-view">
+    <h1><%- firstName %> <%- lastName %></h1>
+    <p>Phone: <%- phoneNumber %></p>
   </script>
   <script src="./assets/js/vendor/jquery.js"></script>
   <script src="./assets/js/vendor/json2.js"></script>
   <script src="./assets/js/vendor/underscore.js"></script>
   <script src="./assets/js/vendor/backbone.js"></script>
   <script src="./assets/js/vendor/backbone.marionette.js"></script>
+  <script src="./assets/js/app.js"></script>
+  <script src="./assets/js/entities/contact.js"></script>
+  <script src="./assets/js/apps/contacts/list/list_view.js"></script>
+  <script src="./assets/js/apps/contacts/list/list_controller.js"></script>
+  <script src="./assets/js/apps/contacts/show/show_view.js"></script>
+  <script src="./assets/js/apps/contacts/show/show_controller.js"></script>
 
   <script type="text/javascript">
-    var ContactManager = new Marionette.Application();
-
-    ContactManager.Contact = Backbone.Model.extend({
-      defaults: {
-        firstName: "",
-        phoneNumber: "No Phone yet"
-      }
-    });
-
-    ContactManager.ContactItemView = Marionette.ItemView.extend({
-      tagName: "li",
-
-      template: "#contact-list-item",
-
-      events: {
-        "click li": "alertPhoneNumber"
-      },
-
-      alertPhoneNumber: function(){
-        console.log(this.model.escape("phoneNumber"));
-      }
-    });
-
-    ContactManager.ContactsView = Marionette.CollectionView.extend({
-      tagName: "ul",
-      childView: ContactManager.ContactItemView
-    });
-
-    ContactManager.ContactCollection = Backbone.Collection.extend({
-      model: ContactManager.Contact,
-      comparator: "firstName"
-    });
-
-    ContactManager.on("before:start", function(){
-      var RegionContainer = Marionette.LayoutView.extend({
-        el: "#app-container",
-        regions: {
-          main: "#main-region"
-        }
-      });
-      ContactManager.regions = new RegionContainer();
-    });
-
-    ContactManager.on("start", function() {
-      var contacts = new ContactManager.ContactCollection(
-        [
-          {
-            firstName: "Giuseppe",
-            lastName: "Grillo",
-            phoneNumber: "1231433243"
-          },
-          {
-            firstName: "Shareef",
-            lastName: "Abdur-Raheem",
-            phoneNumber: "98765533243"
-          },
-          {
-            firstName: "Joe",
-            lastName: "Pilgrim",
-            phoneNumber: "01231433243"
-          }
-        ]  
-      );
-
-      var contactsListView = new ContactManager.ContactsView({
-        collection: contacts
-      });
-      
-      ContactManager.regions.main.show(contactsListView);
-    });
-    
     ContactManager.start();
   </script>
 </body>
